@@ -1,0 +1,14 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: "EC2 instance automation for development environment"
+
+Metadata: 
+
+Parameters: 
+
+Mappings: 
+
+Conditions: 
+
+Resources: 
+
+Outputs:
