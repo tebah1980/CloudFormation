@@ -26,4 +26,4 @@ Resources:
         - Key: key
           Value: value
 
-Outputs: {}
+Outputs: {} 
