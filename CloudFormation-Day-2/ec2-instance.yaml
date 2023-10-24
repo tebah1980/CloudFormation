@@ -12,12 +12,12 @@ Resources:
   DevWebserver:
     Type: AWS::EC2::Instance
     Properties:
-      KeyName: N.Virgina
-      ImageId: ami-01231aec3b018ab63 
+      KeyName: New1-KeyWin
+      ImageId: ami-053b0d53c279acc90
       InstanceType: t2.micro
       Monitoring: true
       SecurityGroupIds:
-        - sg-0c5323218f48ac0ef
+        - sg-0890166182cf5ed89 
       UserData: !Base64 |
         #!/bin/bash
         # sudo su
