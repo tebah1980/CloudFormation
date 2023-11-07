@@ -1,105 +1,107 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: This template provisions our dev network environment
-Metadata:
-  AWS::CloudFormation::Interface: 
-    ParameterGroups: 
-      - 
-        Label: 
-          default: "Dev Network Configuration"
-        Parameters: 
-          - DevVPCCidrBlockPara
-          - DevVPCEnableDnsSupportPara
-          - DevWebserverSubnetAZPara
-          - DevWebserverSubnetCidrBlockPara
-          - DevAppserverSubnetAZPara
-          - DevAppserverSubnetCidrBlockPara
-          - DevDBserverSubnetAZPara
-          - DevDBserverSubnetCidrBlockPara
+Description: "EC2 instance automation for our development environment"
+Metadata: {}
 
 Parameters: 
-  # Dev VPC Parameters
-  DevVPCCidrBlockPara:
-    Description: Please provide your Dev VPC CidrBlock
+  devwebserverkeyname:
+    Description: please select a keypair
+    Type: AWS::EC2::KeyPair::KeyName
+  EnvironmentName:
+    Description: Please select your choice Env.
     Type: String
-    Default: 10.0.0.0/16
+    AllowedValues:
+      - Dev
+      - Prod
+      - Stage
 
-  DevVPCEnableDnsSupportPara:
-    Description: Please enable Dns Support(true/false)
-    Type: String
+Mappings: 
+  devwebservergoldenAMImap:
+    us-east-1:
+      goldenAMI: ami-0fc5d935ebf8bc3bc
+    us-east-2:
+      goldenAMI: ami-0e83be366243f524a
+    us-west-1:
+      goldenAMI: ami-0cbd40f694b804622
+    us-west-2:
+      goldenAMI: ami-0efcece6bed30fd98
 
-  # Webserver subnet parameters
-  DevWebserverSubnetAZPara:
-    Description: Please select an AZ for the DevWebserver subnet
-    Type: AWS::EC2::AvailabilityZone::Name
-
-  DevWebserverSubnetCidrBlockPara:
-    Description: Please provide the Cidr block for your DevWebserver subnet
-    Type: String
-
-  # Appserver subnet parameters
-  DevAppserverSubnetAZPara:
-    Description: Please select an AZ for the DevAppserver subnet
-    Type: AWS::EC2::AvailabilityZone::Name
-
-  DevAppserverSubnetCidrBlockPara:
-    Description: Please provide the Cidr block for your DevAppserver subnet
-    Type: String
-
-  # Database subnet parameters
-  DevDBserverSubnetAZPara:
-    Description: Please select an AZ for the DevDBserver subnet
-    Type: AWS::EC2::AvailabilityZone::Name
-
-  DevDBserverSubnetCidrBlockPara:
-    Description: Please provide the Cidr block for your DevDBserver subnet
-    Type: String
-
-Mappings: {}
-
-Conditions: {}
+Conditions:
+  CreateDevStageProdResources:
+    !Equals [!Ref EnvironmentName, Prod]
 
 Resources: 
-  #devolopment vpc
-  DevVPC:
-    Type: AWS::EC2::VPC
+  DevWebserver1:
+    Type: AWS::EC2::Instance
     Properties:
-      CidrBlock: !Ref DevVPCCidrBlockPara
-      EnableDnsSupport: !Ref DevVPCEnableDnsSupportPara
+      KeyName: !Ref devwebserverkeyname
+      ImageId: !FindInMap [ devwebservergoldenAMImap, !Ref 'AWS::Region', goldenAMI ]
+      InstanceType: t2.micro
+      Monitoring: true
+      UserData: !Base64 |
+        #!/bin/bash 
+        sudo su
+        apt update -y
+        apt -y install apache2
+        systemctl start apache2
+        systemctl enable apache2
+        apt install wget -y
+        wget https://github.com/awanmbandi/google-cloud-projects/raw/jjtech-flix-app/jjtech-streaming-application-v1.zip 
+        apt install unzip -y
+        unzip jjtech-streaming-application-v1.zip
+        rm -f /var/www/html/index.html
+        cp -rf jjtech-streaming-application-v1/* /var/www/html/
       Tags:
         - Key: Name
-          Value: DevVPC
+          Value: DevWebserver1
 
-  # webserver subnet
-  DevWebserverSubnet:
-    Type: AWS::EC2::Subnet
+  DevWebserver2:
+    Condition: CreateDevStageProdResources
+    Type: AWS::EC2::Instance
     Properties:
-      AvailabilityZone: !Ref DevWebserverSubnetAZPara
-      VpcId: !Ref DevVPC
-      CidrBlock: !Ref DevWebserverSubnetCidrBlockPara
+      KeyName: !Ref devwebserverkeyname
+      ImageId: !FindInMap [ devwebservergoldenAMImap, !Ref 'AWS::Region', goldenAMI ]
+      InstanceType: t2.micro
+      Monitoring: true
+      UserData: !Base64 |
+        #!/bin/bash 
+        sudo su
+        apt update -y
+        apt -y install apache2
+        systemctl start apache2
+        systemctl enable apache2
+        apt install wget -y
+        wget https://github.com/awanmbandi/google-cloud-projects/raw/jjtech-flix-app/jjtech-streaming-application-v1.zip 
+        apt install unzip -y
+        unzip jjtech-streaming-application-v1.zip
+        rm -f /var/www/html/index.html
+        cp -rf jjtech-streaming-application-v1/* /var/www/html/
       Tags:
         - Key: Name
-          Value: DevWebserverSubnet  
-
-  # appserver subnet
-  DevAppserverSubnet:
-    Type: AWS::EC2::Subnet
+          Value: DevWebserver2
+          
+  DevWebserver3:
+    Condition: CreateDevStageProdResources
+    Type: AWS::EC2::Instance
     Properties:
-      AvailabilityZone: !Ref DevAppserverSubnetAZPara
-      VpcId: !Ref DevVPC 
-      CidrBlock: !Ref DevAppserverSubnetCidrBlockPara
+      KeyName: !Ref devwebserverkeyname
+      ImageId: !FindInMap [ devwebservergoldenAMImap, !Ref 'AWS::Region', goldenAMI ]
+      InstanceType: t2.micro
+      Monitoring: true
+      UserData: !Base64 |
+        #!/bin/bash 
+        sudo su
+        apt update -y
+        apt -y install apache2
+        systemctl start apache2
+        systemctl enable apache2
+        apt install wget -y
+        wget https://github.com/awanmbandi/google-cloud-projects/raw/jjtech-flix-app/jjtech-streaming-application-v1.zip 
+        apt install unzip -y
+        unzip jjtech-streaming-application-v1.zip
+        rm -f /var/www/html/index.html
+        cp -rf jjtech-streaming-application-v1/* /var/www/html/
       Tags:
         - Key: Name
-          Value: DevAppserverSubnet 
-
-  # databaseserver subnet
-  DevDBserverSubnet:
-    Type: AWS::EC2::Subnet
-    Properties:
-      AvailabilityZone: !Ref DevDBserverSubnetAZPara
-      VpcId: !Ref DevVPC
-      CidrBlock: !Ref DevDBserverSubnetCidrBlockPara
-      Tags:
-        - Key: Name
-          Value: DevDBserverSubnet             
+          Value: DevWebserver3        
 
 Outputs: {}
