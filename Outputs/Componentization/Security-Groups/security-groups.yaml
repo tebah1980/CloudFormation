@@ -1,0 +1,88 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: this template provisions webservers and database security group
+  
+Metadata: {}
+
+Parameters: 
+  DevWebserverSGGN:
+    Description: please provide Dev webserver group name
+    Type: String 
+    Default: DevWebserverSGGN
+
+  DevWebserversSG:
+    Description: please provide Dev webserver group decription
+    Type: String
+    Default: enabling SSH and HTTP
+
+    DevWebserverSGGN:
+    Description: please provide Dev DBserver group name
+    Type: String 
+    Default: DevDBserverSGN
+
+  DevDBserversSGGD:
+    Description: please provide Dev DBserver group decription
+    Type: String
+    Default: enabling sql
+
+Mappings: {}
+
+Conditions: {}
+
+Resources: 
+# Webserver Sercurity group
+DevDBserverSG:
+  Type: AWS::EC2::SecurityGroup
+  Properties:
+    GroupName: !Ref DevWebserverSGGN
+    GroupDescription: DevWebserverSGGD
+    VpcId:  !ImportValue DevVPCID
+    SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: 22
+        ToPort: 22
+        CidrIp: 0.0.0.0/0
+    SecurityGroupEgress:
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: 22
+        ToPort: 22
+        CidrIp: 0.0.0.0/0
+    Tags:
+      - Key: Name
+        Value: DevWebserverSG
+
+  #Database security group
+  DevDBserverSG:
+  Type: AWS::EC2::SecurityGroup
+  Properties:
+    GroupName: !Ref DevDBserverSGGN
+    GroupDescription: DevDBserverSGGD
+    VpcId:
+    SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 3306
+        ToPort: 3306
+        CidrIp: 0.0.0.0/0
+
+    SecurityGroupEgress:
+      - IpProtocol: tcp
+        FromPort: 3306
+        ToPort: 3306
+
+        CidrIp: 0.0.0.0/0
+    Tags:
+      - Key: Name
+        Value: DevDBserverSG
+Outputs:
+  DevWebserverSGIDExportOutput:
+    Description: Exporting DevWebserver SG ID
+    Value: !Ref  DevWebserverSG
+    Export: 
+      Name: DevWebserverSGID

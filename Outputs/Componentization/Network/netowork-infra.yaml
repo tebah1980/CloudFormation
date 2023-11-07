@@ -1,35 +1,28 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: This template provisions our dev network environment
-Metadata: 
-  AWS::CloudFormation::Interface: 
-    ParameterGroups: 
-      - 
-        Label: 
-          default: "Dev Network Configuration"
-        Parameters: 
-          - 
-          - 
-          - 
+Metadata: {}
+
 Parameters: 
   # Dev VPC Parameters
   DevVPCCidrBlockPara:
     Description: Please provide your Dev VPC CidrBlock
     Type: String
     Default: 10.0.0.0/16
-
+  
   DevVPCEnableDnsSupportPara:
     Description: Please enable Dns Support(true/false)
     Type: String
+    Default: true
 
   # Webserver subnet parameters
   DevWebserverSubnetAZPara:
     Description: Please select an AZ for the DevWebserver subnet
     Type: AWS::EC2::AvailabilityZone::Name
-
+    Default: us-east-1a
   DevWebserverSubnetCidrBlockPara:
     Description: Please provide the Cidr block for your DevWebserver subnet
     Type: String
-
+    Default:
   # Appserver subnet parameters
   DevAppserverSubnetAZPara:
     Description: Please select an AZ for the DevAppserver subnet
@@ -96,4 +89,14 @@ Resources:
         - Key: Name
           Value: DevDBserverSubnet             
 
-Outputs: {}
+Outputs:
+  DevVPVIDExportOutput:
+    Description: Exporting Dev VPC ID
+    Value: !Ref DevVPC
+    Export: 
+      Name: DevVPCID
+  DevWebserverSubnetIDExportOutput:
+    Description: Exporting Dev Web subnet ID
+    Value: !Ref DevWebserverSubnet
+    Export: 
+      Name: DevWebserverSubnetID

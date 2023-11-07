@@ -1,15 +1,21 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: This template provisions our dev network environment
-Metadata: 
+Metadata:
   AWS::CloudFormation::Interface: 
     ParameterGroups: 
       - 
         Label: 
           default: "Dev Network Configuration"
         Parameters: 
-          - 
-          - 
-          - 
+          - DevVPCCidrBlockPara
+          - DevVPCEnableDnsSupportPara
+          - DevWebserverSubnetAZPara
+          - DevWebserverSubnetCidrBlockPara
+          - DevAppserverSubnetAZPara
+          - DevAppserverSubnetCidrBlockPara
+          - DevDBserverSubnetAZPara
+          - DevDBserverSubnetCidrBlockPara
+
 Parameters: 
   # Dev VPC Parameters
   DevVPCCidrBlockPara:
